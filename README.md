@@ -30,3 +30,26 @@ contract ReceiverAction {
         return address(this).balance;
     }
 }
+
+# LOW DEPTH
+
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0; 
+contract ContractOne {
+
+    mapping (address => uint) public addressBalance;
+
+    function deposit() public payable {
+        addressBalance[msg.sender] += msg.value;
+    }
+}
+
+contract ContractTwo {
+    receive() external payable {}
+
+    function depositonContractOne(address _contractOne) public {
+        ContractOne one = ContractOne(_contractOne);
+        one.deposit{value: 10,gas: 100000}();
+    }
+}
