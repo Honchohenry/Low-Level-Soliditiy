@@ -53,3 +53,55 @@ contract ContractTwo {
         one.deposit{value: 10,gas: 100000}();
     }
 }
+# WithSignature
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0; 
+contract ContractOne {
+
+    mapping (address => uint) public addressBalance;
+
+    function deposit() public payable {
+        addressBalance[msg.sender] += msg.value;
+    }
+
+     
+}
+
+contract ContractTwo {
+    receive() external payable {}
+
+    function depositonContractOne(address _contractOne) public {
+        bytes memory payload = abi.encodeWithSignature("deposit()");
+       (bool success,) =_contractOne.call{value: 10,gas: 100000}(payload); 
+       require(success);
+
+    }
+}     
+
+# WITHOUT PAYLOAD
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0; 
+contract ContractOne {
+
+    mapping (address => uint) public addressBalance;
+
+    function deposit() public payable {
+        addressBalance[msg.sender] += msg.value;
+    }
+
+     receive() external payable { 
+        deposit();
+     } 
+}
+
+contract ContractTwo {
+    receive() external payable {}
+
+    function depositonContractOne(address _contractOne) public {
+       (bool success,) =_contractOne.call{value: 10,gas: 100000}(""); 
+       require(success);
+
+    }
+}    
